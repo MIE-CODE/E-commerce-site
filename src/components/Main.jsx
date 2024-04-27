@@ -1,50 +1,115 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Top from "./Top";
 import { FaCartShopping } from "react-icons/fa6";
 import Product from "./Product/Product";
-import Modal from "./Modal";
+import Modal from "./CartModal";
+import CartListModal from "./CartListModal";
 
 const Main = () => {
   const [showModal, setShowModal] = useState(false);
+  const [isLoadind, setIsLoading] = useState(true);
+  const [products, setProducts] = useState(null);
+  const [showCartList, setShowCartList] = useState(false);
+  const [selectedFilter, setSelectedFilter] = useState(null);
+  const [file, setFile] = useState(null);
+  showModal
+    ? (document.body.style.overflow = "hidden")
+    : (document.body.style.overflow = "auto");
+  showCartList
+    ? (document.body.style.overflow = "hidden")
+    : (document.body.style.overflow = "auto");
+
+  useEffect(() => {
+    const fechtData = async () => {
+      try {
+        const response = await fetch(
+          "https://mie-store-backend.onrender.com/api/products"
+        );
+
+        const result = await response.json();
+        setProducts(result);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fechtData();
+  }, []);
 
   return (
-    <div className=" relative w-[1223px] mx-auto mt-[31px] ">
-      {showModal && <Modal setShowModal={setShowModal} />}
-      <Top />
-      <div className="flex justify-between items-center mt-20">
-        <p className=" text-3xl font-['OldStandardTT']">Brand Your Packages </p>
-        <button className="bg-[#DF4425] hover:bg-[#df4d25]/95 active:bg-[#DF4425]/80 transition duration-300 ease-in-out text-white flex justify-center items-center w-[232px] h-[40px] gap-2 rounded-xl">
-          <FaCartShopping />
-          Cart List
-        </button>
-      </div>
-      <div className="flex justify-between my-[52px]">
-        <div className="flex flex-col gap-[10px] w-[252px]   text-xl font-['OldStandardTT']">
-          <div className="flex items-center px-[22px] w-[253px] h-[77px] active:text-white   rounded-md bg-[#FFEDEA]/30 active:bg-[#DF4425]">
-            Boxes
-          </div>
-          <div className="flex items-center px-[22px] w-[253px] h-[77px] active:text-white   rounded-md bg-[#FFEDEA]/30 active:bg-[#DF4425]">
-            Apparels
-          </div>
-          <div className="flex items-center px-[22px] w-[253px] h-[77px] active:text-white   rounded-md bg-[#FFEDEA]/30 active:bg-[#DF4425]">
-            Bags & Tote Bags
-          </div>
-          <div className="flex items-center px-[22px] w-[253px] h-[77px] active:text-white   rounded-md bg-[#FFEDEA]/30 active:bg-[#DF4425]">
-            Bottle Water
-          </div>
-          <div className="flex items-center px-[22px] w-[253px] h-[77px] active:text-white   rounded-md bg-[#FFEDEA]/30 active:bg-[#DF4425]">
-            Note Book & pen
-          </div>
+    <>
+      <div className=" relative xl:w-[1223px] mx-auto mt-[31px] ">
+        {showModal && (
+          <Modal
+            products={products?.product}
+            setShowModal={setShowModal}
+            setFile={setFile}
+          />
+        )}
+        {showCartList && (
+          <CartListModal setShowCartList={setShowCartList} setFile={setFile} />
+        )}
+        {file}
+        <Top />
+        <div className="flex justify-between items-center mt-20 px-2 xl:px-0">
+          <p className=" text-3xl font-['OldStandardTT']">
+            Brand Your Packages{" "}
+          </p>
+          <button
+            onClick={() => setShowCartList(true)}
+            className="bg-[#DF4425] hover:bg-[#df4d25]/95 active:bg-[#DF4425]/80 transition duration-300 ease-in-out text-white flex justify-center items-center w-[232px] h-[40px] gap-2 rounded-xl"
+          >
+            <FaCartShopping />
+            Cart List
+          </button>
         </div>
-        <div className="flex flex-col gap-[52px]">
-          <Product name="Boxes" setShowmodal={setShowModal} />
-          <Product name="Appearls" setShowmodal={setShowModal} />
-          <Product name="Bags & Tote Bags" setShowmodal={setShowModal} />
-          <Product name="Water Bottle" setShowmodal={setShowModal} />
-          <Product name="Note Book & Pen" setShowmodal={setShowModal} />
+        <div className="xl:flex justify-between my-10">
+          <div className="flex xl:flex-col px-1 my-5 lg:my-0 font-['OldStandardTT'] gap-2 lg:gap-[14px]">
+            {products?.map((nav, index) => (
+              <button
+                key={index}
+                onClick={() => {
+                  if (selectedFilter === nav.category) {
+                    setSelectedFilter("");
+                  } else {
+                    setSelectedFilter(nav.category);
+                  }
+                }}
+                className={`text-[10px] md:text-base lg:text-[20px] px-2 md:px-4 text-left rounded-md h-10 lg:h-[77px] lg:w-[253px] ${
+                  selectedFilter === nav.category
+                    ? "bg-[#DF4425] text-white"
+                    : "bg-[#FFEDEA]/30"
+                }`}
+              >
+                {nav.category}
+              </button>
+            ))}
+          </div>
+          {isLoadind ? (
+            <div className="flex flex-wrap mt-20 ml-10  gap-10">
+              {[...Array(8)].map((items) => (
+                <div
+                  key={items}
+                  className="bg-slate-300 w-[200px] h-[347px] rounded-md  animate-pulse"
+                ></div>
+              ))}
+            </div>
+          ) : (
+            <div className="flex  flex-col gap-[52px] px-2  xl:px-0">
+              {products?.map((product, index) => (
+                <Product
+                  key={product?._id}
+                  products={product?.product}
+                  name={products[index]?.category}
+                  setShowmodal={setShowModal}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

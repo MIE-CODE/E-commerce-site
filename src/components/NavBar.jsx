@@ -7,7 +7,6 @@ const NavBar = () => {
     <>
       <div className=" hidden lg:flex gap-[50px] items-center justify-center text-base">
         <button className="hover:text-[#DF4425] size-6 transition duration-300 ease-in-out">
-          {" "}
           <FaMagnifyingGlass />
         </button>
         <button className="hover:text-[#DF4425] transition duration-300 ease-in-ou">
