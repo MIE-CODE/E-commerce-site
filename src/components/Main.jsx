@@ -8,16 +8,11 @@ import CartListModal from "./CartListModal";
 const Main = () => {
   const [showModal, setShowModal] = useState(false);
   const [isLoadind, setIsLoading] = useState(true);
-  const [products, setProducts] = useState(null);
+  const [products, setProducts] = useState(Object);
   const [showCartList, setShowCartList] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState(null);
   const [file, setFile] = useState(null);
-  showModal
-    ? (document.body.style.overflow = "hidden")
-    : (document.body.style.overflow = "auto");
-  showCartList
-    ? (document.body.style.overflow = "hidden")
-    : (document.body.style.overflow = "auto");
+  const [id, setId] = useState(null);
 
   useEffect(() => {
     const fechtData = async () => {
@@ -25,9 +20,25 @@ const Main = () => {
         const response = await fetch(
           "https://mie-store-backend.onrender.com/api/products"
         );
-
         const result = await response.json();
-        setProducts(result);
+        const items = result?.reduce((acc, product) => {
+          const { category } = product;
+          if (!acc[category]) {
+            acc[category] = [];
+          }
+          acc[category].push(product);
+          return acc;
+        }, {});
+        setProducts(items);
+
+        // const groupedProducts = products?.reduce((acc, product) => {
+        //   const { category } = product;
+        // if (!acc[category]) {
+        //   acc[category] = [];
+        // }
+        //   acc[category].push(product);
+        //   return acc;
+        // }, {});
       } catch (error) {
         console.log(error);
       } finally {
@@ -37,6 +48,7 @@ const Main = () => {
     fechtData();
   }, []);
 
+  console.log(products);
   return (
     <>
       <div className=" relative xl:w-[1223px] mx-auto mt-[31px] ">
@@ -66,23 +78,23 @@ const Main = () => {
         </div>
         <div className="xl:flex justify-between my-10">
           <div className="flex xl:flex-col px-1 my-5 lg:my-0 font-['OldStandardTT'] gap-2 lg:gap-[14px]">
-            {products?.map((nav, index) => (
+            {Object.entries(products).map(([category, products]) => (
               <button
-                key={index}
+                key={category}
                 onClick={() => {
-                  if (selectedFilter === nav.category) {
+                  if (selectedFilter === category) {
                     setSelectedFilter("");
                   } else {
-                    setSelectedFilter(nav.category);
+                    setSelectedFilter(category);
                   }
                 }}
                 className={`text-[10px] md:text-base lg:text-[20px] px-2 md:px-4 text-left rounded-md h-10 lg:h-[77px] lg:w-[253px] ${
-                  selectedFilter === nav.category
+                  selectedFilter === category
                     ? "bg-[#DF4425] text-white"
                     : "bg-[#FFEDEA]/30"
                 }`}
               >
-                {nav.category}
+                {category}
               </button>
             ))}
           </div>
@@ -96,16 +108,24 @@ const Main = () => {
               ))}
             </div>
           ) : (
-            <div className="flex  flex-col gap-[52px] px-2  xl:px-0">
-              {products?.map((product, index) => (
-                <Product
-                  key={product?._id}
-                  products={product?.product}
-                  name={products[index]?.category}
-                  setShowmodal={setShowModal}
-                />
+            <>
+              {Object.entries(products).map(([category, product]) => (
+                // console.log(category,product);
+                <div
+                  key={category}
+                  className="flex  flex-col gap-[52px] px-2  xl:px-0"
+                >
+                  {product.map((item, index) => (
+                    <Product
+                      key={index}
+                      products={product}
+                      name={category}
+                      setShowmodal={setShowModal}
+                    />
+                  ))}
+                </div>
               ))}
-            </div>
+            </>
           )}
         </div>
       </div>

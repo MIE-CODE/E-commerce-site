@@ -2,11 +2,20 @@ import React from "react";
 import { FaBars } from "react-icons/fa";
 import { FaCartShopping, FaMagnifyingGlass } from "react-icons/fa6";
 
-const NavBar = () => {
+const NavBar = ({ setSearch, search }) => {
   return (
     <>
       <div className=" hidden lg:flex gap-[50px] items-center justify-center text-base">
-        <button className="hover:text-[#DF4425] size-6 transition duration-300 ease-in-out">
+        <button
+          onClick={() => {
+            if (search === true) {
+              setSearch(false);
+            } else {
+              setSearch(true);
+            }
+          }}
+          className="hover:text-[#DF4425] size-6 transition duration-300 ease-in-out"
+        >
           <FaMagnifyingGlass />
         </button>
         <button className="hover:text-[#DF4425] transition duration-300 ease-in-ou">

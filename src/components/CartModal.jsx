@@ -4,11 +4,13 @@ import hoodie from "./images/hoodie.png";
 import smallHoodie from "./images/18218926_Isolated_back_black_hoodie-removebg-preview 1.png";
 import { MdOutlineUploadFile } from "react-icons/md";
 import { IoCheckmarkSharp } from "react-icons/io5";
+import { motion } from "framer-motion";
 
 const Modal = ({ setShowModal, setFile, products }) => {
   const [selectedSize, setSelectedSize] = useState("S");
-  const [selectedColor, setSelectedColor] = useState(true);
-  const [count, setCount] = useState(25);
+  const [selectedColor, setSelectedColor] = useState("");
+  const [count, setCount] = useState(1);
+  console.log(selectedColor, selectedSize, count);
 
   const sizes = ["S", "M", "L", "XL", "XXL"];
   const colors = [
@@ -18,20 +20,48 @@ const Modal = ({ setShowModal, setFile, products }) => {
     { name: "#DF4425" },
     { name: "#000000" },
   ];
-  console.log(products);
+  if (products) {
+    console.log(products);
+  }
+  const backDrop = {
+    hidden: {
+      opacity: 0,
+    },
+    visible: {
+      opacity: 1,
+      transition: { type: "spring", delay: 0.5 },
+    },
+  };
+  const modal = {
+    hidden: {
+      opacity: 0,
+      y: "-100vh",
+    },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { type: "spring", delay: 0.3, stiffness: 40 },
+    },
+  };
   return (
-    <div
+    <motion.div
+      variants={backDrop}
+      initial="hidden"
+      animate="visible"
       onClick={() => setShowModal(false)}
-      className="flex justify-center items-center  w-screen h-screen fixed bg-black/50 top-0 right-0 z-50 p-1"
+      className="flex min-w-[100vw] min-h-screen fixed bg-black/50 top-0 right-0 z-50 p-1"
     >
-      <div className="flex gap-1 lg:gap-[6px]">
+      <motion.div
+        variants={modal}
+        className="flex gap-1 lg:gap-[6px] mx-auto mt-20"
+      >
         <div
           // style={{
           //   width: "clamp(50%,789px, 90%)",
           //   height: "min(50%, 300px)",
           // }}
           onClick={(e) => e.stopPropagation()}
-          className="flex justify-between gap-[52px] w-[250px] md:w-[738px] lg:w-[789px] lg:h-[738px] shadow-lg shadow-black/20 bg-white rounded-2xl  p-[32px] "
+          className="flex justify-between gap-[52px]  md:w-[738px] lg:w-[789px] lg:h-[738px] shadow-lg shadow-black/20 bg-white rounded-2xl  p-[32px] "
         >
           <div className="flex flex-col w-[80%] gap-[24px]">
             <div className="bg-[#F5F5F5] rounded-[28px] w-[50px] h-[50px] lg:w-[353px] lg:h-[383px]">
@@ -101,7 +131,7 @@ const Modal = ({ setShowModal, setFile, products }) => {
                   {colors.map((color, index) => (
                     <button
                       onClick={() => {
-                        setSelectedColor(index);
+                        setSelectedColor(color.name);
                       }}
                       style={{ backgroundColor: color.name }}
                       className={`flex ${
@@ -142,7 +172,9 @@ const Modal = ({ setShowModal, setFile, products }) => {
                     }
                   }}
                   className={`flex justify-center items-center text-[#D0C4C2] w-[32px] h-[32px] ${
-                    count <= 1 ? "bg-[#FFDAD5]" : "bg-[#DF4425]"
+                    count <= 1
+                      ? "bg-[#FFDAD5]"
+                      : "bg-[#DF4425] active:opacity-80 transition duration-200 "
                   }   rounded`}
                 >
                   <FaMinus />
@@ -155,7 +187,9 @@ const Modal = ({ setShowModal, setFile, products }) => {
                     }
                   }}
                   className={`flex justify-center items-center text-[#D0C4C2] w-[32px] h-[32px] ${
-                    count >= 25 ? "bg-[#FFDAD5]" : "bg-[#DF4425]"
+                    count >= 25
+                      ? "bg-[#FFDAD5]"
+                      : "bg-[#DF4425] active:opacity-80 transition duration-200"
                   }   rounded`}
                 >
                   <FaPlus />
@@ -175,8 +209,8 @@ const Modal = ({ setShowModal, setFile, products }) => {
         >
           <FaX />
         </button>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };
 

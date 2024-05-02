@@ -1,17 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
 import pics from "../images/24345278_flat-magnetic-boxes-mockup-opened-and-closed 1.png";
 
-const Product = ({ name, setShowmodal, products, id }) => {
+const Product = ({ name, setShowmodal, products }) => {
   return (
     <div className="flex flex-col lg:gap-[28px] xl:w-[884px]">
       <p className="text-xl md:text-3xl leading-8 font-['OldStandardTT']">
         {name}
       </p>
       <div className="flex xl:gap-[16px]  ">
-        {products?.map((product, index) => (
+        {/* {products?.map((product, index) => (
           <div
             className="text-[10px] md:text-base lg:text-[14px] lg:w-[209px] shadow-md hover:scale-[1.009] active:scale-100 active:shadow-none hover:shadow-lg hover:shadow-black/20 rounded-md transition ease-in-out duration-300"
-            key={product?._id}
+            key={product}
           >
             <div className="bg-[#D9D9D9]/30 h-[100px] lg:h-[149px] flex justify-center items-center">
               <img src={pics} alt="imag" />
@@ -35,7 +35,7 @@ const Product = ({ name, setShowmodal, products, id }) => {
               </button>
             </div>
           </div>
-        ))}
+        ))} */}
       </div>
     </div>
   );
